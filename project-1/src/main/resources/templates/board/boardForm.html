@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" 
+    name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Board Form</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+    <script type="text/javascript">
+	
+    /* content="text/html; charset=UTF-8" */
+	function goPost(path,params,method){
+		alert(path)
+		
+		method = method || "POST";
+		alert(method)
+		var form = document.createElement("form");
+		form.setAttribute("method",method);
+		form.setAttribute("action",path);
+		for( var key in params){
+			var hiddenField = document.createElement("input");
+			hiddenField.setAttribute("type","hidden");
+			hiddenField.setAttribute("name",key);
+			hiddenField.setAttribute("value",params[key]);
+			form.appendChild(hiddenField);
+		}
+		
+		document.body.appendChild(form);
+		form.submit();   
+	}
+</script>
+</head>
+<body id = "contan">
+    <div th:replace="layout/header::header"></div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>게시글 등록</h1>
+        </div>
+        <br/>
+        <input id="userSession" type="hidden" th:value="${userSession}"/>
+        <input id="board_id" type="hidden" th:value="${board?.id}"/>
+        <input id="board_create_date" type="hidden" th:value="${board?.wdate}"/>
+        <table class="table">
+            <tr>
+                <th style="padding:13px 0 0 15px">게시판 선택</th>
+                <td>
+                    <div class="pull-left">
+                        <select class="form-control input-sm" id="board_type">
+                            <option>--분류--</option>
+                            <option th:value="notice" th:selected="${board?.boardType?.name() == 'notice'}">공지사항</option>
+                            <option th:value="free" th:selected="${board?.boardType?.name() == 'free'}">자유게시판</option>
+                        </select>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th style="padding:13px 0 0 15px;">생성날짜</th>
+                <td><input type="text" class="col-md-1 form-control input-sm" disabled="" readonly="readonly" th:value="${board?.wdate}"/></td>
+            </tr>
+            <tr>
+                <th style="padding:13px 0 0 15px;">제목</th>
+                <td><input id="board_title" type="text" class="col-md-1 form-control input-sm" th:value="${board?.title}"/></td>
+            </tr>
+            <tr>
+                <th style="padding:13px 0 0 15px;">부제목</th>
+                <td><input id="board_sub_title" type="text" class="col-md-1 form-control input-sm" th:value="${board?.subTitle}"/></td>
+            </tr>
+            <tr>
+                <th style="padding:13px 0 0 15px;">내용</th>
+                <td><textarea id="board_content" class="col-md-1 form-control input-sm" maxlength="500" rows="7" style="height: 200px;"
+                th:text="${board?.content}"></textarea><span class="help-block"></span>
+                </td>
+            </tr>
+        </table>
+        <div >
+	       
+	        <div class="right" style="display:flex; justify-content:flex-end; align-items:center;" >
+	            <button th:if="!${board?.id}" type="button" class="btn btn-primary" id="insert">저장</button>
+	            <button th:if="${board?.id}" type="button" class="btn btn-secondary" id="update">수정</button>
+	        </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:if="!${board?.id}">
+        $('#insert').click(function () {
+            var jsonData = JSON.stringify({ // JSON.stringify 는 자바스크립트 오브젝트를 제이슨으로 바꿔준다
+                title: $('#board_title').val(),
+                subTitle: $('#board_sub_title').val(),
+                content: $('#board_content').val().replace(/\n/g,"<br>"),
+                boardType: $('#board_type option:selected').val()
+            });
+            $.ajax({
+                       url: "/board/signup/" + $('#userSession').val(),
+                       type: "POST",
+                       data: jsonData,
+                       contentType: "application/json",
+                       headers: {
+                           "Authorization": "Basic " + btoa("havi" + ":" + "test")
+                       },
+                       dataType: "json", /* 응답받는 형태가 json이다? */
+                           success: function () {
+                               alert('저장 성공!');
+                               location.href="/board/list";
+                       },
+                       error: function () {
+                           alert('저장 실패!');
+                       }
+                   });
+        });
+    </script>
+    <!-- <script th:if="${board?.id}">
+        $('#update').click(function () {
+        	var jsonData = JSON.stringify({
+                title: $('#board_title').val(),
+                subTitle: $('#board_sub_title').val(),
+                content: $('#board_content').val().replace(/\n/g,"<br>"),
+                boardType: $('#board_type option:selected').val(),
+                createdDate: $('#board_create_date').val()
+            });
+        	
+        	let form = document.createElement('form');
+            let obj;
+            obj = document.createElement('input');
+            obj.setAttribute('type','hidden');
+            obj.setAttribute('name','boardid');
+            obj.setAttribute('id','boardid');
+            obj.setAttribute('value',jsonData);
+            
+            alert(jsonData);
+            form.append(obj);
+            form.setAttribute('method','POST');
+            form.setAttribute('action','/board/update');
+            form.setAttribute('encType','application/json');
+            alert(form);
+            document.body.appendChild(form);
+            form.submit();
+        });
+    </script> -->
+        <script th:if="${board?.id}">
+        $('#update').click(function () {
+            var jsonData = JSON.stringify({
+            	id: $('#board_id').val(),
+                title: $('#board_title').val(),
+                subTitle: $('#board_sub_title').val(),
+                content: $('#board_content').val().replace(/\n/g,"<br>"),
+                boardType: $('#board_type option:selected').val(),
+                createdDate: $('#board_create_date').val()
+            });
+            $.ajax({
+                       url: "/board/update",
+                       type: "PUT",
+                       data: jsonData,
+                       contentType: "application/json",
+                       success: function (data) {
+                    	   alert("update success");
+                           $("#contan").html(data);
+                       },
+                       error: function () {
+                           alert('수정 실패!');
+                       }
+                   });
+        });
+        </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" http-equiv="Content-Type" 
+    name="viewport" content="width=device-width, initial-scale=1">
+<title th:text="${board.title}"></title>
+<link rel="stylesheet" th:href="@{/css/base.css}" />
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<title>Insert title here</title>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script type="text/javascript">
+	$(document).ready( function() {
+		selectAll();
+	});
+	
+	function goPost(path, params, method) {
+		method = method || "POST";
+		var form = document.createElement("form");
+		form.setAttribute("method", method);
+		form.setAttribute("action", path);
+		for ( var key in params) {
+			var hiddenField = document.createElement("input");
+			hiddenField.setAttribute("type", "hidden");
+			hiddenField.setAttribute("name", key);
+			hiddenField.setAttribute("value", params[key]);
+			form.appendChild(hiddenField);
+		}
+
+		document.body.appendChild(form);
+		form.submit();
+	}
+	function selectAll(){
+		var board_id = { board_id : $("#board_id").val() }
+		$.ajax({
+			url : "/re/searchAll",
+			type : "GET",
+			data : board_id,
+			success : function(data) {
+				$("#comment_ist").html(data);
+			},
+			error : function() {
+			}
+		});
+	}
+	
+    function del(no) {
+    	var deleteData = { comment_id : no };
+    	$.ajax({
+    		url : "/re/delete",
+    		data : deleteData,
+    		type : "POST",
+    		success : function() {
+    			selectAll();
+    		}
+    	});
+    }
+	
+/* 	function viewComment(){
+		var board_id = { board_id : $("#board_id").val() }
+		$.ajax({
+			url : "/re/searchAll",
+			type : "GET",
+			data : board_id,
+			success : function(data) {
+				alert('삭제 성공!');
+				$("#comment_ist").html(data);
+			},
+			error : function() {
+				alert('삭제 실패!');
+			}
+		});
+	} */
+	
+</script>
+
+</head>
+<body id="contan">
+	<div th:replace="layout/header::header"></div>
+	<div class="container">
+		<div class="page-header">
+			<h1>게시글</h1>
+		</div>
+		<br /> <input id="board_id" type="hidden" th:value="${board?.id}" />
+		<table class="table" style="margin-bottom: 0">
+			<tr>
+				<th style="padding: 13px 0 0 15px">게시판 종류</th>
+				<td>
+					<div class="pull-left">
+						<span id="board_type" th:text="${board?.boardType}"></span>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th style="padding: 13px 0 0 15px;">시간</th>
+				<td><span id="board_wdate" class="" th:text="${board?.wdate}"></span></td>
+			</tr>
+			<tr>
+				<th style="padding: 13px 0 0 15px;">제목</th>
+				<td><span id="board_title" class="" th:text="${board?.title}"></span></td>
+			</tr>
+			<tr>
+				<th style="padding: 13px 0 0 15px;">부제목</th>
+				<td><span id="board_sub_title" class=""
+					th:text="${board.subTitle}"></span></td>
+			</tr>
+			<tr>
+				<th style="padding: 13px 0 0 15px;">작성자</th>
+				<td>
+					<span id="board_username" class=""
+					th:text="${board.user.username}"></span>
+					<span th:if="${board.user.role == 'ROLE_ADMIN'}" class="badge bg-danger">admin</span>
+					<span th:if="${board.user.role == 'ROLE_USER'}" class="badge bg-primary">user</span>
+				</td>
+			</tr>
+			<tr>
+				<th style="padding: 13px 0 0 15px;" th:colspan="2">내용</th>
+			</tr>
+			<tr>
+				<td th:colspan="2"><span id="board_content" class=""
+					style="height: 200px;">[(${board.content})]</span> <span
+					class="help-block"></span></td>
+			</tr>
+		</table>
+			<br/>
+		<div>
+			<div style="display:inline-flex; justify-content:flex-start; align-items:center;">
+				<a class="btn btn-outline-light" href="/board/list" >목록으로</a>
+			</div>
+			<div style="display:inline-flex; justify-content:flex-end; align-items:center; width:90%;">
+					
+				<input th:if="${board?.user?.id == user?.id} or ${user?.role == 'ROLE_ADMIN'}" type="button"
+					class="btn btn-secondary" id="update" value="수정"
+					th:onclick="goPost('/board/updateForm',{id:[[${board.id}]]},'POST')" />
+				<input th:if="${board?.user?.id == user?.id} or ${user?.role == 'ROLE_ADMIN'}" type="button"
+					class="btn btn-light" id="delete" value="삭제" />
+			</div>
+		</div>
+		<br>
+		<hr>
+		<div id="comment_ist">
+
+		</div>
+		<div class="card mb-2">
+			<div class="card-header bg-light">
+				<i class="fa fa-comment fa"></i> REPLY
+			</div>
+			<div class="card-body">
+				<div class="list-group list-group-flush">
+					<textarea class="form-control" id="comment_content" rows="3"></textarea>
+					<button type="button" class="btn btn-dark mt-3" id="comment_submit" onClick="javascript:addReply();">post reply</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		/* $('#update').click(function(){
+		   var id=$("#board_id").val();
+		   let form = document.createElement('form');
+		   let obj;
+		   obj = document.createElement('input');
+		   obj.setAttribute('type','hidden');
+		   obj.setAttribute('name','boardid');
+		   obj.setAttribute('id','boardid');
+		   obj.setAttribute('value',id)
+		   
+		   form.append(obj);
+		   form.setAttribute('method','post');
+		   form.setAttribute('action','/board/updateForm');
+		   alert(form);
+		   document.body.appendChild(form);
+		   form.submit();
+		  
+		}); */
+		
+		/* var paramData = {
+					content : JSON.stringify({
+						comment : $('#comment_content').val()
+					}),
+				board_id : $('#board_id').val()
+			}; */
+		
+		$('#comment_submit').click(function(){;
+			var paramData = {
+				content : $('#comment_content').val(),
+				board_id : $('#board_id').val()
+			};
+			$.ajax({
+				url : "/re/insert",
+				type : "GET",
+				data : paramData,
+				success : function(){
+					selectAll();
+				},
+				error : function(){
+					alert("TT");
+				}
+			});
+		});
+
+		$('#delete').click(function() {
+			alert("delete?");
+			var jsonData = JSON.stringify({
+				id : $('#board_id').val()
+			});
+			$.ajax({
+				url : "/board/delete",
+				type : "DELETE",
+				data : jsonData,
+				contentType : "application/json",
+				success : function() {
+					alert('삭제 성공!');
+					location.href="/board/list"
+
+				},
+				error : function() {
+					alert('삭제 실패!');
+				}
+			});
+		});
+	</script>
+	
+</body>
+</html>

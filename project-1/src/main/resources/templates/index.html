@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" http-equiv="Content-Type" 
+    name="viewport" content="width=device-width, initial-scale=1">
+<title>Insert title here</title>
+<link rel="stylesheet" th:href="@{/css/base.css}" />
+<link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/darkly/bootstrap.min.css" >
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+<!-- <style>
+body {
+  padding: 25px;
+  background-color: white;
+  color: black;
+  font-size: 25px;
+}
+
+.dark-mode {
+  background-color: black;
+  color: white;
+}
+</style> -->
+</head>
+<body>
+<div th:replace="layout/header::header"></div>
+<br><br><br>
+<div style="text-align:center">
+
+<h1>Board</h1>
+<h5>Spring Boot &nbsp&nbsp & &nbsp&nbsp JPA &nbsp&nbsp & &nbsp&nbsp Thymeleaf &nbsp&nbsp & &nbsp&nbsp MySQL &nbsp&nbsp & &nbsp&nbsp ngrok </h5>
+<p>Kang Byeong Jun <small class="text-muted"> &nbsp help me</small></p>
+	<br><br><br>
+	<div class="accordion" id="accordionExample" style="margin:7.5%" >
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="ture" aria-controls="collapseOne">
+        <h4 class="text-warning">1. &nbsp&nbsp 프로젝트 기능</h4>
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="">
+      <div class="accordion-body">
+        <div style="display:inline-flex; justify-content:flex-start; align-content:flex-start; align-items:center; width:99%; text-align:lfet;">
+        		<img alt="" src="/images/function.png" width="100%" >
+        	</div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        <h4 class="text-warning">2. &nbsp&nbsp 클래스 구조</h4>
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample" style="">
+      <div class="accordion-body">
+        <img alt="" src="/images/javafile.png" width="100%" >
+        <img alt="" src="/images/viewpage.png" width="100%" >
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingThree">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+        <h4 class="text-warning">3. &nbsp&nbsp 테이블 구조</h4>
+      </button>
+    </h2>
+    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample" style="">
+      <div class="accordion-body">
+        <div>
+        	<div style="display:inline-flex; justify-content:flex-start; align-content:flex-start; align-items:center; width:95%; text-align:lfet;">
+        		<img alt="" src="/images/ERDiagram_black.png" width="95%" >
+        	</div>
+  <!--       	<div style="display:inline-flex; justify-content:flex-start; align-items:baseline; width:25%; ">
+        		
+        	</div> -->
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  <br><br><br><br>
+</div>
+</div>
+<!-- 	<button type="button" onclick="homzzang()">모드 전환</button>
+				<div id="theme"></div> -->
+	<div th:replace="layout/footer::footer"></div>
+</body>
+<!-- <script>
+(function() {
+  let onpageLoad = localStorage.getItem("theme") || "";
+  let element = document.body;
+  element.classList.add(onpageLoad);
+  document.getElementById("theme").textContent =
+    localStorage.getItem("theme") || "light";
+})();
+
+function homzzang() {
+  let element = document.body;
+  element.classList.toggle("dark-mode");
+
+  let theme = localStorage.getItem("theme");
+  if (theme && theme === "dark-mode") {
+    localStorage.setItem("theme", "");
+  } else {
+    localStorage.setItem("theme", "dark-mode");
+  }
+
+  document.getElementById("theme").textContent = localStorage.getItem("theme");
+}
+
+</script> -->
+</html>	

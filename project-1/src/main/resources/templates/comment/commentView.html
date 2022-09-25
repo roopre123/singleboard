@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+	<link rel="stylesheet" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+    <script th:src="@{/js/jquery.min.js}"></script>
+
+<title>Insert title here</title>
+</head>
+<body>
+<h1>Comment View</h1>
+	<div>
+		<table class="table" style="margin-bottom: 0">
+			<tr th:each="comment : ${commentList}">
+				<th style="padding: 15px 0 0 15px;">[(${comment.user.username})] &nbsp&nbsp&nbsp&nbsp
+					<span th:if="${comment.user.role == 'ROLE_ADMIN'}" class="badge bg-danger">admin</span>
+					<span th:if="${comment.user.role == 'ROLE_USER'}" class="badge bg-primary">user</span>
+				</th>
+				<td>
+					<p class="" th:text="${comment.comment}"></p>
+					<span class="" th:text="${comment.cdate}" style="font-size: 12px;"></span>
+					<input class="btn btn-outline-light" th:if="${comment.user.id == user.id} or ${user.role == 'ROLE_ADMIN'}" type="button" th:onclick="del([[${comment.id}]])" value="삭제">
+				</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

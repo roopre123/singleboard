@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" http-equiv="Content-Type" 
+    name="viewport" content="width=device-width, initial-scale=1">
+<title>Insert title here</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+</head>
+<body>
+<div id="search_change_board">
+			<div align="right" class="d-flex" style="display:flex; justify-content:flex-end; align-items:center;">
+        	<select id="search_board" >
+        		<option value="0">선택</option>
+        		<option value="search_title" th:selected="${map.get('key')} == 'search_title'">제목</option>
+        		<option value="search_username" th:selected="${map.get('key')} == 'search_username'">작성자</option>
+        	</select>
+        	<input th:if="${map.get('value')}" type="text" placeholder="검색어 입력" maxlength="50" 
+        		id="search_value" th:value="${map?.get('value')}" class="me-sm-2"/>
+        	<button type="button" id="search_user_button" onclick="search_button()" 
+        	class="btn btn-secondary my-2 my-sm-0">검색</button>
+		</div>
+	        <div id="mainHide">
+	        	<table class="table table-hover table-active">
+	        		<thead>
+	        			<tr>
+	        				<th scope="col">#</th>
+	        				<th scope="col">서비스 분류</th>
+	        				<th scope="col">제목</th>
+	        				<th scope="col">부제목</th>
+	        				<th scope="col">작성자</th>
+	        				<th scope="col"></th>
+	        				<th scope="col">작성일</th>
+	        			</tr>
+	        		</thead>
+	        		<tbody>
+	        			<tr th:each="board : ${boardList}">
+	        				<td th:text="${board.id}"></td>
+	        				<td th:text="${board.boardType.value}"></td>
+	        				<!-- <td th:text="${board.title}" ></td> -->
+	        				<td><a href="#" th:onclick="goPost('/board/view',{id:[[${board.id}]]},'POST'); return false;" th:text="${board.title}"></a></td>
+	        				<!-- <td><a th:href="'/board/view/?id='+${board.id}" th:text="${board.title}"></a></td> -->
+	        				<td th:text="${board.subTitle}"></td>
+	        				<td th:text="${board.user.username}"></td>
+	        				<td>
+								<span th:if="${board.user.role == 'ROLE_ADMIN'}" class="badge bg-danger">admin</span>
+								<span th:if="${board.user.role == 'ROLE_USER'}" class="badge bg-primary">user</span>
+							</td>
+	        				<td th:text="${board.wdate}"></td>
+	        			</tr>	
+	        		</tbody>
+	        	</table>
+	        </div>
+	        <br/>
+	        <!-- 페이지 내비게이션..  -->
+	        <div style="display: flex; justify-content: center; align-items: center;">
+			<div role="toolbar" aria-label="Toolbar with button groups" class="btn-toolbar" >
+				<div class="pagination" th:with="startNumber=${T(java.lang.Math).floor(boardList.number/5)}*5+1, endNumber=(${boardList.totalPages} > ${startNumber}+4) ? ${startNumber}+4 : ${boardList.totalPages}">
+					<a class="btn btn-secondary" aria-label="Previous" href="#" th:onclick="goajax(1,[[${map.get('key')}]] ,[[${map.get('value')}]]); return false;">&#10218;</a>
+					
+					<a class="btn btn-secondary" href="#" th:style="${boardList.first} ? 'display:none'"
+					th:onclick=	"goajax([[${boardList.number}]],[[${map.get('key')}]] ,[[${map.get('value')}]]); return false;">&#10216;</a>
+					
+					<a class="btn btn-secondary" href="#" th:each="page :${#numbers.sequence(startNumber, endNumber)}"  
+					th:text="${page}" th:classappend="(${page} == ${boardList.number}+1) ? 'active'"th:onclick="goajax([[${page}]],[[${map.get('key')}]] ,[[${map.get('value')}]]); return false;"><span class="sr-only"></span></a>
+					
+					<a class="btn btn-secondary" href="#" th:style="${boardList.last} ? 'display:none'"
+					th:onclick="goajax([[${boardList.number}]]+2,[[${map.get('key')}]] ,[[${map.get('value')}]]); return false;">&rang;</a>
+					
+					<a class="btn btn-secondary" aria-label="Next" href="#" th:onclick="goajax([[${boardList.totalPages}]],[[${map.get('key')}]] ,[[${map.get('value')}]]); return false;">&#10219;</a>
+					
+				</div>
+			</div></div>
+	    </div>
+	     <script type="text/javascript">
+    		function goajax(pageValue, mapKey, mapValue){
+    			var data = {
+    					page : pageValue,
+    					search_board : mapKey,
+    					search_value : mapValue
+    			}
+    			  $.ajax({
+                     url: "/board/search",
+                     type: "GET",
+                     data: data,
+                     success: function (data) {
+                         $("#search_change_board").html(data);
+                     },
+                     error: function () {
+                         alert('수정 실패!');
+                     }
+                 }); 
+    		}
+
+    </script>
+   
+</body>
+</html>
